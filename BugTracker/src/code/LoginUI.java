@@ -1,3 +1,4 @@
+package code;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -48,8 +49,12 @@ public class LoginUI {
 	/**
 	 * Create the application.
 	 */
-	public LoginUI() {
-		initialize();
+	public LoginUI(boolean Switch) {
+		
+		if(Switch == true)
+		{
+			initialize();
+		}
 	}
 
 	/**

@@ -1,3 +1,4 @@
+package code;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
@@ -11,7 +12,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class StaffGUI  {
+public class UserGUI  {
 
 	private JFrame frame = new JFrame();
 	private JTextField unameText;
@@ -20,7 +21,7 @@ public class StaffGUI  {
 	private JTextField bugDescText;
 
 	
-	public StaffGUI() {
+	public UserGUI() {
 		
 		frame.setBounds(100, 100, 550, 400);
 		frame.setTitle("UserGUI");
@@ -60,7 +61,7 @@ public class StaffGUI  {
 		frame.getContentPane().add(uPanel);
 		
 		JLabel bugDesc = new JLabel("Bug Description");
-		bugDesc.setBounds(10, 157, 84, 25);
+		bugDesc.setBounds(10, 157, 104, 25);
 		frame.getContentPane().add(bugDesc);
 		
 		bugDescText = new JTextField();

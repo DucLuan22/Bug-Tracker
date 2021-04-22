@@ -1,3 +1,4 @@
+package code;
 import java.awt.EventQueue;
 
 public class Launcher {
@@ -5,7 +6,7 @@ public class Launcher {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					LoginUI window = new LoginUI();
+					LoginUI ui = new LoginUI(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
