@@ -35,7 +35,8 @@ public class LoginUI {
 	private UserGUI uGUI;
 	private StaffGUI staff;
 	private AdminGUI admin;
-	public  static String Name;
+	private static String Name;
+	private String first,middle,last;
 	private static String ID;
 	private String url = "jdbc:mysql://localhost:3306/bugtracker";
 	private String username = "root";
@@ -125,13 +126,16 @@ public class LoginUI {
 				try {
 					con = new DBConnection(url, username, password);
 					Statement stm = con.getConnection().createStatement();
-					String sql = "Select * from Admin where admin_id = '" + adUser+"' and admin_pass ='" + adPass +"'";
+					String sql = "Select * from Admin where admin_ID = '" + adUser+"' and admin_pass ='" + adPass +"'";
 					stm.execute(sql);
 					ResultSet rs = stm.executeQuery(sql);
 					
 					if(rs.next()){
-						Name = rs.getString("admin_name");
-						ID = rs.getString("admin_id");
+						first = rs.getString("admin_firstname");
+						middle = rs.getString("admin_middlename");
+						last = rs.getString("admin_lastname");
+						Name = first + " " + middle +" "+last;
+						ID = rs.getString("admin_ID");
 						admin = new AdminGUI();
 					}
 					else

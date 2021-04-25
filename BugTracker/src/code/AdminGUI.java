@@ -1,4 +1,5 @@
 package code;
+
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
@@ -27,7 +28,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 
-
 public class AdminGUI {
 
 	private JFrame frame = new JFrame();
@@ -49,10 +49,14 @@ public class AdminGUI {
 	private JPasswordField staffPassField;
 	private JPasswordField staffRePassField;
 	private LoginUI ui = new LoginUI(false);
+	private JTextField adminAssignField;
 	private JTextField staffAssignField;
-	private JTextField userAssignField;
-	private JTextField textField;
+	private JTextField projectAssignField;
 	private JTable table_product;
+	private JTable assignTable;
+	private String[] nameParts;
+	private JTextField queryField;
+	private JTable resultTab;
 
 	public AdminGUI() {
 
@@ -146,27 +150,27 @@ public class AdminGUI {
 		JLabel lblNewLabel_2 = new JLabel("Project Descripsion");
 		lblNewLabel_2.setBounds(8, 190, 113, 14);
 		adPro.add(lblNewLabel_2);
-		
+
 		JScrollPane productTable = new JScrollPane();
 		productTable.setBounds(75, 277, 394, 134);
 		adPro.add(productTable);
-		
+
 		table_product = new JTable();
 		productTable.setViewportView(table_product);
-		
+
 		JButton proLoad = new JButton("Load");
 		proLoad.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-			try {
-				
-				String query = "Select * from project";
-				DBConnection con2 = new DBConnection(url, username, password);
-				PreparedStatement pst = con2.getConnection().prepareStatement(query) ;
-				ResultSet rs = pst.executeQuery();
-				table_product.setModel(DbUtils.resultSetToTableModel(rs));
-				rs.close();
-				con2.getConnection().close();
-				}catch (Exception n) {
+				try {
+
+					String query = "Select * from project";
+					DBConnection con2 = new DBConnection(url, username, password);
+					PreparedStatement pst = con2.getConnection().prepareStatement(query);
+					ResultSet rs = pst.executeQuery();
+					table_product.setModel(DbUtils.resultSetToTableModel(rs));
+					rs.close();
+					con2.getConnection().close();
+				} catch (Exception n) {
 					n.printStackTrace();
 				}
 			}
@@ -175,10 +179,10 @@ public class AdminGUI {
 		adPro.add(proLoad);
 		// Tab
 		JPanel adUser = new JPanel();
-		tabbedPane.addTab("User&Staff", null, adUser, null);
+		tabbedPane.addTab("Insert", null, adUser, null);
 		adUser.setLayout(null);
 
-		JLabel adUserLabel = new JLabel("Admin - User&Staff");
+		JLabel adUserLabel = new JLabel("Admin - Insert");
 		adUserLabel.setFont(new Font("Tahoma", Font.BOLD, 16));
 		adUserLabel.setBounds(186, 11, 179, 24);
 		adUser.add(adUserLabel);
@@ -196,7 +200,7 @@ public class AdminGUI {
 		adUser.add(lblNewLabel_3_2);
 
 		userNameField = new JTextField();
-		userNameField.setBounds(127, 44, 238, 20);
+		userNameField.setBounds(127, 44, 218, 20);
 		adUser.add(userNameField);
 		userNameField.setColumns(10);
 
@@ -218,6 +222,36 @@ public class AdminGUI {
 		adUser.add(userPassField);
 
 		JButton userInsert = new JButton("Insert");
+		userInsert.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (userNameField.getText().equals("") || userPassField.getText().equals("")
+						|| userIDField.getText().equals("") || userRePassField.getText().equals("")) {
+					JOptionPane.showMessageDialog(adminPanel, "Please enter information");
+				}
+				else if(userPassField.getText().equals(userRePassField.getText())) {
+					try {
+						nameParts = nameSplit(userNameField.getText());
+						con = new DBConnection(url, username, password);
+						Statement stm = con.getConnection().createStatement();
+						String sql = "INSERT INTO user(user_ID,user_pass,user_firstname,user_middlename,user_lastname) VALUES "
+								+ "('" + userIDField.getText() + "','"+ userPassField.getText() + "','"
+								+ nameParts[0] + "','"+ nameParts[1] +"','"+ nameParts[2]+"')";
+						stm.execute(sql);
+						JOptionPane.showMessageDialog(adminPanel, "Added Successfully");
+						stm.close();
+						userNameField.setText("");
+						userPassField.setText("");
+						userIDField.setText("");
+						userRePassField.setText("");
+					} catch (Exception n) {
+						n.printStackTrace();
+					}
+				}
+				else {
+					JOptionPane.showMessageDialog(adminPanel, "Repeat password is not right");
+				}
+			}
+		});
 		userInsert.setBounds(202, 188, 89, 23);
 		adUser.add(userInsert);
 
@@ -256,6 +290,37 @@ public class AdminGUI {
 		adUser.add(staffRePassField);
 
 		JButton staffInsert = new JButton("Insert");
+		staffInsert.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+					if (staffNameField.getText().equals("") || staffPassField.getText().equals("")
+							|| staffIDField.getText().equals("") || staffRePassField.getText().equals("")) {
+						JOptionPane.showMessageDialog(adminPanel, "Please enter information");
+					}
+					else if(staffPassField.getText().equals(staffRePassField.getText())) {
+						try {
+							nameParts = nameSplit(staffNameField.getText());
+							con = new DBConnection(url, username, password);
+							Statement stm = con.getConnection().createStatement();
+							String sql = "INSERT INTO staff(staff_ID,staff_pass,staff_firstname,staff_middlename,staff_lastname) VALUES "
+									+ "('" + staffIDField.getText() + "','"+ staffPassField.getText() + "','"
+									+ nameParts[0] + "','"+ nameParts[1] +"','"+ nameParts[2]+"')";
+							stm.execute(sql);
+							JOptionPane.showMessageDialog(adminPanel, "Added Successfully");
+							stm.close();
+							staffNameField.setText("");
+							staffPassField.setText("");
+							staffIDField.setText("");
+							staffRePassField.setText("");
+						} catch (Exception n) {
+							n.printStackTrace();
+						}
+					}
+					else {
+						JOptionPane.showMessageDialog(adminPanel, "Repeat password is not right");
+					}
+				}
+		});
 		staffInsert.setBounds(204, 376, 87, 23);
 		adUser.add(staffInsert);
 
@@ -267,41 +332,140 @@ public class AdminGUI {
 		lblAdminAssign.setBounds(197, 11, 193, 20);
 		lblAdminAssign.setFont(new Font("Tahoma", Font.BOLD, 16));
 		adAssign.add(lblAdminAssign);
-		
-		JLabel lblNewLabel_5 = new JLabel("Staff ID");
-		lblNewLabel_5.setBounds(10, 65, 46, 14);
+
+		JLabel lblNewLabel_5 = new JLabel("Admin ID");
+		lblNewLabel_5.setBounds(103, 65, 46, 14);
 		adAssign.add(lblNewLabel_5);
-		
+
+		adminAssignField = new JTextField();
+		adminAssignField.setBounds(197, 62, 150, 20);
+		adAssign.add(adminAssignField);
+		adminAssignField.setColumns(10);
+
+		JLabel lblNewLabel_6 = new JLabel("Staff ID");
+		lblNewLabel_6.setBounds(103, 112, 46, 14);
+		adAssign.add(lblNewLabel_6);
+
 		staffAssignField = new JTextField();
-		staffAssignField.setBounds(79, 62, 150, 20);
+		staffAssignField.setBounds(197, 109, 150, 20);
 		adAssign.add(staffAssignField);
 		staffAssignField.setColumns(10);
-		
-		JLabel lblNewLabel_6 = new JLabel("User ID");
-		lblNewLabel_6.setBounds(10, 112, 46, 14);
-		adAssign.add(lblNewLabel_6);
-		
-		userAssignField = new JTextField();
-		userAssignField.setBounds(79, 109, 150, 20);
-		adAssign.add(userAssignField);
-		userAssignField.setColumns(10);
-		
+
 		JLabel lblNewLabel_7 = new JLabel("Project ID");
-		lblNewLabel_7.setBounds(10, 156, 67, 14);
+		lblNewLabel_7.setBounds(103, 156, 67, 14);
 		adAssign.add(lblNewLabel_7);
-		
-		textField = new JTextField();
-		textField.setBounds(79, 153, 150, 20);
-		adAssign.add(textField);
-		textField.setColumns(10);
-		
+
+		projectAssignField = new JTextField();
+		projectAssignField.setBounds(197, 153, 150, 20);
+		adAssign.add(projectAssignField);
+		projectAssignField.setColumns(10);
+
 		JButton btnNewButton = new JButton("Assign");
-		btnNewButton.setBounds(219, 226, 89, 23);
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+					if (staffAssignField.getText().equals("") || adminAssignField.getText().equals("")
+							|| projectAssignField.getText().equals("")) {
+						JOptionPane.showMessageDialog(adminPanel, "Please enter information");
+					}
+					else {
+						try {
+							con = new DBConnection(url, username, password);
+							Statement stm = con.getConnection().createStatement();
+							String sql = "INSERT INTO assign(admin_ID,staff_ID,project_ID) VALUES "
+									+ "('" + adminAssignField.getText() + "','"+ staffAssignField.getText() + "','"
+									+ projectAssignField.getText() + "')";
+							stm.execute(sql);
+							JOptionPane.showMessageDialog(adminPanel, "Added Successfully");
+							stm.close();
+							userNameField.setText("");
+							userPassField.setText("");
+							userIDField.setText("");
+							userRePassField.setText("");
+						} catch (Exception n) {
+							n.printStackTrace();
+						}
+					}
+					
+			}
+		});
+		btnNewButton.setBounds(138, 201, 89, 23);
 		adAssign.add(btnNewButton);
 
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(74, 260, 402, 137);
+		adAssign.add(scrollPane);
+
+		assignTable = new JTable();
+		scrollPane.setViewportView(assignTable);
+
+		JButton assignLoad = new JButton("Load");
+		assignLoad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+
+					String query = "Select * from assign";
+					DBConnection con2 = new DBConnection(url, username, password);
+					PreparedStatement pst = con2.getConnection().prepareStatement(query);
+					ResultSet rs = pst.executeQuery();
+					assignTable.setModel(DbUtils.resultSetToTableModel(rs));
+					rs.close();
+					con2.getConnection().close();
+				} catch (Exception n) {
+					n.printStackTrace();
+				}
+			}
+		});
+		assignLoad.setBounds(284, 201, 89, 23);
+		adAssign.add(assignLoad);
+
 		JPanel adSearch = new JPanel();
-		tabbedPane.addTab("View", null, adSearch, null);
+		tabbedPane.addTab("Search", null, adSearch, null);
+		adSearch.setLayout(null);
 		
+		JLabel lblAdminSearch = new JLabel("Admin - Search");
+		lblAdminSearch.setBounds(202, 5, 124, 20);
+		lblAdminSearch.setFont(new Font("Tahoma", Font.BOLD, 16));
+		adSearch.add(lblAdminSearch);
+		
+		queryField = new JTextField();
+		queryField.setBounds(103, 36, 316, 39);
+		adSearch.add(queryField);
+		queryField.setColumns(10);
+		
+		JLabel lblNewLabel_8 = new JLabel("Query");
+		lblNewLabel_8.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lblNewLabel_8.setBounds(36, 42, 57, 27);
+		adSearch.add(lblNewLabel_8);
+		
+		JButton btnSearch = new JButton("Run");
+		btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				try {
+
+					String query = queryField.getText();
+					DBConnection con2 = new DBConnection(url, username, password);
+					PreparedStatement pst = con2.getConnection().prepareStatement(query);
+					ResultSet rs = pst.executeQuery();
+					resultTab.setModel(DbUtils.resultSetToTableModel(rs));
+					rs.close();
+					con2.getConnection().close();
+				} catch (Exception n) {
+					n.printStackTrace();
+				}
+				
+			}
+		});
+		btnSearch.setBounds(430, 44, 89, 23);
+		adSearch.add(btnSearch);
+		
+		JScrollPane resultScroll = new JScrollPane();
+		resultScroll.setBounds(36, 107, 473, 286);
+		adSearch.add(resultScroll);
+		
+		resultTab = new JTable();
+		resultScroll.setViewportView(resultTab);
+
 		EnterIDAndName();
 
 	}
@@ -309,7 +473,12 @@ public class AdminGUI {
 	private void EnterIDAndName() {
 		name_Field.setText(ui.getName());
 		id_Field.setText(ui.getID());
+		adminAssignField.setText(ui.getID());
 	}
-	
-	 
+
+	private String[] nameSplit(String n) {
+		String name = n;
+		String[] parts = name.split(" ");
+		return parts;
+	}
 }
