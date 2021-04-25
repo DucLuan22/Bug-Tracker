@@ -87,16 +87,13 @@ DROP TABLE IF EXISTS `assign`;
 CREATE TABLE `assign` (
   `admin_ID` varchar(20) NOT NULL,
   `staff_ID` varchar(20) NOT NULL,
-  `user_ID` varchar(20) NOT NULL,
   `project_ID` varchar(20) NOT NULL,
   KEY `getadminID_idx` (`admin_ID`),
   KEY `getstaff_ID_idx` (`staff_ID`),
-  KEY `getuser_ID_idx` (`user_ID`),
   KEY `getproject_ID_idx` (`project_ID`),
   CONSTRAINT `getadminID` FOREIGN KEY (`admin_ID`) REFERENCES `admin` (`admin_ID`),
   CONSTRAINT `getproject_ID` FOREIGN KEY (`project_ID`) REFERENCES `project` (`project_ID`),
-  CONSTRAINT `getstaff_ID` FOREIGN KEY (`staff_ID`) REFERENCES `staff` (`staff_ID`),
-  CONSTRAINT `getuser_ID` FOREIGN KEY (`user_ID`) REFERENCES `user` (`user_ID`)
+  CONSTRAINT `getstaff_ID` FOREIGN KEY (`staff_ID`) REFERENCES `staff` (`staff_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -121,7 +118,7 @@ CREATE TABLE `bug` (
   `project_ID` varchar(20) NOT NULL,
   `bug_name` varchar(255) DEFAULT NULL,
   `bug_status` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`bug_ID`),
+  PRIMARY KEY (`bug_ID`,`project_ID`),
   KEY `project_connect_idx` (`project_ID`),
   CONSTRAINT `project_connect` FOREIGN KEY (`project_ID`) REFERENCES `project` (`project_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -135,6 +132,38 @@ LOCK TABLES `bug` WRITE;
 /*!40000 ALTER TABLE `bug` DISABLE KEYS */;
 INSERT INTO `bug` VALUES ('bug_1','1234','loss name','not fix'),('bug_2','4321','overload','fixed');
 /*!40000 ALTER TABLE `bug` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `debug`
+--
+
+DROP TABLE IF EXISTS `debug`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `debug` (
+  `staff_ID` varchar(20) NOT NULL,
+  `bug_ID` varchar(20) NOT NULL,
+  `project_ID` varchar(20) NOT NULL,
+  `ticket_ID` varchar(20) NOT NULL,
+  KEY `getdebug_staff_ID_idx` (`staff_ID`),
+  KEY `getdebug_bug_ID_idx` (`bug_ID`),
+  KEY `getdebug_project_ID_idx` (`project_ID`),
+  KEY `getdebug_ticket_ID_idx` (`ticket_ID`),
+  CONSTRAINT `getdebug_bug_ID` FOREIGN KEY (`bug_ID`) REFERENCES `bug` (`bug_ID`),
+  CONSTRAINT `getdebug_project_ID` FOREIGN KEY (`project_ID`) REFERENCES `project` (`project_ID`),
+  CONSTRAINT `getdebug_staff_ID` FOREIGN KEY (`staff_ID`) REFERENCES `staff` (`staff_ID`),
+  CONSTRAINT `getdebug_ticket_ID` FOREIGN KEY (`ticket_ID`) REFERENCES `ticket` (`ticket_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `debug`
+--
+
+LOCK TABLES `debug` WRITE;
+/*!40000 ALTER TABLE `debug` DISABLE KEYS */;
+/*!40000 ALTER TABLE `debug` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -202,10 +231,13 @@ CREATE TABLE `report` (
   `user_ID` varchar(20) NOT NULL,
   `ticket_ID` varchar(20) NOT NULL,
   `bug_ID` varchar(20) NOT NULL,
+  `project_ID` varchar(20) NOT NULL,
   KEY `get_report_user_ID_idx` (`user_ID`),
   KEY `get_report_ticket_ID_idx` (`ticket_ID`),
   KEY `get_report_bug_ID_idx` (`bug_ID`),
+  KEY `get_report_project_ID_idx` (`project_ID`),
   CONSTRAINT `get_report_bug_ID` FOREIGN KEY (`bug_ID`) REFERENCES `bug` (`bug_ID`),
+  CONSTRAINT `get_report_project_ID` FOREIGN KEY (`project_ID`) REFERENCES `project` (`project_ID`),
   CONSTRAINT `get_report_ticket_ID` FOREIGN KEY (`ticket_ID`) REFERENCES `ticket` (`ticket_ID`),
   CONSTRAINT `get_report_user_ID` FOREIGN KEY (`user_ID`) REFERENCES `user` (`user_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -293,7 +325,7 @@ CREATE TABLE `ticket` (
   `ticket_date` date DEFAULT NULL,
   `ticket_desc` varchar(255) DEFAULT NULL,
   `ticket_status` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`ticket_ID`),
+  PRIMARY KEY (`ticket_ID`,`bug_ID`),
   KEY `get_ticket_bug_ID_idx` (`bug_ID`),
   CONSTRAINT `get_ticket_bug_ID` FOREIGN KEY (`bug_ID`) REFERENCES `bug` (`bug_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -335,6 +367,32 @@ LOCK TABLES `user` WRITE;
 INSERT INTO `user` VALUES ('user_01',NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `user-view`
+--
+
+DROP TABLE IF EXISTS `user-view`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user-view` (
+  `ticket_id` varchar(20) NOT NULL,
+  `bug_ID` varchar(20) NOT NULL,
+  KEY `get_userview_ticket_ID_idx` (`ticket_id`),
+  KEY `get_userview_bug_ID_idx` (`bug_ID`),
+  CONSTRAINT `get_userview_bug_ID` FOREIGN KEY (`bug_ID`) REFERENCES `bug` (`bug_ID`),
+  CONSTRAINT `get_userview_ticket_ID` FOREIGN KEY (`ticket_id`) REFERENCES `ticket` (`ticket_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user-view`
+--
+
+LOCK TABLES `user-view` WRITE;
+/*!40000 ALTER TABLE `user-view` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user-view` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -345,4 +403,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-04-24 17:13:51
+-- Dump completed on 2021-04-25 13:49:23
