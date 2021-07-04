@@ -25,14 +25,14 @@ import javax.swing.JTextField;
 public class LoginUI {
 
 	private JFrame frame;
-	private JLayeredPane layeredPane = new JLayeredPane();
+	private JLayeredPane layeredPane = layeredPane = new JLayeredPane();
 	private JTextField adUserField;
 	private JPasswordField adPassField;
 	private JTextField staffUserField;
 	private JPasswordField staffPassField;
 	private JTextField userUserField;
 	private JPasswordField userPassField;
-	private UserGUI uGUI;
+	private UserGUI user;
 	private StaffGUI staff;
 	private AdminGUI admin;
 	private static String Name;
@@ -68,6 +68,7 @@ public class LoginUI {
 	}
 
 	public void switchPannel(JPanel panel) {
+		
 		layeredPane.removeAll();
 		layeredPane.add(panel);
 		layeredPane.repaint();
@@ -189,8 +190,34 @@ public class LoginUI {
 
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				if (staffUserField.getText().equals("Nam") && staffPassField.getText().equals("123")) {
-					staff = new StaffGUI();
+				String staffUser = staffUserField.getText();
+				String staffPass = staffPassField.getText();
+				
+				try {
+					con = new DBConnection(url, username, password);
+					Statement stm = con.getConnection().createStatement();
+					String sql = "Select * from staff where staff_ID = '" + staffUser+"' and staff_pass ='" + staffPass +"'";
+					stm.execute(sql);
+					ResultSet rs = stm.executeQuery(sql);
+					
+					if(rs.next()){
+						first = rs.getString("staff_firstname");
+						middle = rs.getString("staff_middlename");
+						last = rs.getString("staff_lastname");
+						Name = first + " " + middle +" "+last;
+						ID = rs.getString("staff_ID");
+						staff = new StaffGUI();
+					}
+					else
+					{
+						JOptionPane.showMessageDialog(adminPanel, "Wrong Username or Password");
+						staffUserField.setText("");
+						staffPassField.setText("");
+					}
+					stm.close();
+					rs.close();
+				} catch (Exception n) {
+					n.printStackTrace();
 				}
 			}
 		});
@@ -230,9 +257,34 @@ public class LoginUI {
 		userPanel.add(userLogbutt);
 		userLogbutt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (userUserField.getText().equals("User") && userPassField.getText().equals("123")) {
-					uGUI = new UserGUI();
-
+				String userUser = userUserField.getText();
+				String userPass = userPassField.getText();
+				
+				try {
+					con = new DBConnection(url, username, password);
+					Statement stm = con.getConnection().createStatement();
+					String sql = "Select * from user where user_ID = '" + userUser+"' and user_pass ='" + userPass +"'";
+					stm.execute(sql);
+					ResultSet rs = stm.executeQuery(sql);
+					
+					if(rs.next()){
+						first = rs.getString("user_firstname");
+						middle = rs.getString("user_middlename");
+						last = rs.getString("user_lastname");
+						Name = first + " "+ middle +" "+last;
+						ID = rs.getString("user_ID");
+						user = new UserGUI();
+					}
+					else
+					{
+						JOptionPane.showMessageDialog(null, "Wrong Username or Password");
+						staffUserField.setText("");
+						staffPassField.setText("");
+					}
+					stm.close();
+					rs.close();
+				} catch (Exception n) {
+					n.printStackTrace();
 				}
 			}
 		});

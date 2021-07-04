@@ -49,14 +49,11 @@ public class AdminGUI {
 	private JPasswordField staffPassField;
 	private JPasswordField staffRePassField;
 	private LoginUI ui = new LoginUI(false);
-	private JTextField adminAssignField;
-	private JTextField staffAssignField;
-	private JTextField projectAssignField;
 	private JTable table_product;
-	private JTable assignTable;
 	private String[] nameParts;
 	private JTextField queryField;
 	private JTable resultTab;
+	private JTextField projectAssignField;
 
 	public AdminGUI() {
 
@@ -124,8 +121,9 @@ public class AdminGUI {
 						con = new DBConnection(url, username, password);
 						Statement stm = con.getConnection().createStatement();
 						String sql = "INSERT INTO project VALUES ('" + proId_Field.getText() + "','"
-								+ proName_Field.getText() + "','" + proDesc_Field.getText() + "')";
+								+ proName_Field.getText() + "','" + proDesc_Field.getText() +"','"+id_Field.getText() +"')";
 						stm.execute(sql);
+						JOptionPane.showMessageDialog(adminPanel, "Added Successfully");
 						stm.close();
 					} catch (Exception n) {
 						n.printStackTrace();
@@ -233,9 +231,9 @@ public class AdminGUI {
 						nameParts = nameSplit(userNameField.getText());
 						con = new DBConnection(url, username, password);
 						Statement stm = con.getConnection().createStatement();
-						String sql = "INSERT INTO user(user_ID,user_pass,user_firstname,user_middlename,user_lastname) VALUES "
+						String sql = "INSERT INTO user(user_ID,user_pass,user_firstname,user_middlename,user_lastname,admin_id) VALUES "
 								+ "('" + userIDField.getText() + "','"+ userPassField.getText() + "','"
-								+ nameParts[0] + "','"+ nameParts[1] +"','"+ nameParts[2]+"')";
+								+ nameParts[0] + "','"+ nameParts[1] +"','"+ nameParts[2]+"','"+id_Field.getText() +"')";
 						stm.execute(sql);
 						JOptionPane.showMessageDialog(adminPanel, "Added Successfully");
 						stm.close();
@@ -302,9 +300,9 @@ public class AdminGUI {
 							nameParts = nameSplit(staffNameField.getText());
 							con = new DBConnection(url, username, password);
 							Statement stm = con.getConnection().createStatement();
-							String sql = "INSERT INTO staff(staff_ID,staff_pass,staff_firstname,staff_middlename,staff_lastname) VALUES "
+							String sql = "INSERT INTO staff(staff_ID,staff_pass,staff_firstname,staff_middlename,staff_lastname,project_id,admin_id) VALUES "
 									+ "('" + staffIDField.getText() + "','"+ staffPassField.getText() + "','"
-									+ nameParts[0] + "','"+ nameParts[1] +"','"+ nameParts[2]+"')";
+									+ nameParts[0] + "','"+ nameParts[1] +"','"+ nameParts[2]+"','"+ projectAssignField.getText()+"','"+ id_Field.getText()+"')";
 							stm.execute(sql);
 							JOptionPane.showMessageDialog(adminPanel, "Added Successfully");
 							stm.close();
@@ -323,100 +321,15 @@ public class AdminGUI {
 		});
 		staffInsert.setBounds(204, 376, 87, 23);
 		adUser.add(staffInsert);
-
-		JPanel adAssign = new JPanel();
-		tabbedPane.addTab("Assign" + "", null, adAssign, null);
-		adAssign.setLayout(null);
-
-		JLabel lblAdminAssign = new JLabel("Admin - Assign Project");
-		lblAdminAssign.setBounds(197, 11, 193, 20);
-		lblAdminAssign.setFont(new Font("Tahoma", Font.BOLD, 16));
-		adAssign.add(lblAdminAssign);
-
-		JLabel lblNewLabel_5 = new JLabel("Admin ID");
-		lblNewLabel_5.setBounds(103, 65, 46, 14);
-		adAssign.add(lblNewLabel_5);
-
-		adminAssignField = new JTextField();
-		adminAssignField.setBounds(197, 62, 150, 20);
-		adAssign.add(adminAssignField);
-		adminAssignField.setColumns(10);
-
-		JLabel lblNewLabel_6 = new JLabel("Staff ID");
-		lblNewLabel_6.setBounds(103, 112, 46, 14);
-		adAssign.add(lblNewLabel_6);
-
-		staffAssignField = new JTextField();
-		staffAssignField.setBounds(197, 109, 150, 20);
-		adAssign.add(staffAssignField);
-		staffAssignField.setColumns(10);
-
-		JLabel lblNewLabel_7 = new JLabel("Project ID");
-		lblNewLabel_7.setBounds(103, 156, 67, 14);
-		adAssign.add(lblNewLabel_7);
-
+		
+		JLabel lblNewLabel_3_2_1_1 = new JLabel("Project ID");
+		lblNewLabel_3_2_1_1.setBounds(305, 290, 89, 24);
+		adUser.add(lblNewLabel_3_2_1_1);
+		
 		projectAssignField = new JTextField();
-		projectAssignField.setBounds(197, 153, 150, 20);
-		adAssign.add(projectAssignField);
+		projectAssignField.setBounds(387, 292, 115, 20);
+		adUser.add(projectAssignField);
 		projectAssignField.setColumns(10);
-
-		JButton btnNewButton = new JButton("Assign");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-					if (staffAssignField.getText().equals("") || adminAssignField.getText().equals("")
-							|| projectAssignField.getText().equals("")) {
-						JOptionPane.showMessageDialog(adminPanel, "Please enter information");
-					}
-					else {
-						try {
-							con = new DBConnection(url, username, password);
-							Statement stm = con.getConnection().createStatement();
-							String sql = "INSERT INTO assign(admin_ID,staff_ID,project_ID) VALUES "
-									+ "('" + adminAssignField.getText() + "','"+ staffAssignField.getText() + "','"
-									+ projectAssignField.getText() + "')";
-							stm.execute(sql);
-							JOptionPane.showMessageDialog(adminPanel, "Added Successfully");
-							stm.close();
-							userNameField.setText("");
-							userPassField.setText("");
-							userIDField.setText("");
-							userRePassField.setText("");
-						} catch (Exception n) {
-							n.printStackTrace();
-						}
-					}
-					
-			}
-		});
-		btnNewButton.setBounds(138, 201, 89, 23);
-		adAssign.add(btnNewButton);
-
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(74, 260, 402, 137);
-		adAssign.add(scrollPane);
-
-		assignTable = new JTable();
-		scrollPane.setViewportView(assignTable);
-
-		JButton assignLoad = new JButton("Load");
-		assignLoad.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-
-					String query = "Select * from assign";
-					DBConnection con2 = new DBConnection(url, username, password);
-					PreparedStatement pst = con2.getConnection().prepareStatement(query);
-					ResultSet rs = pst.executeQuery();
-					assignTable.setModel(DbUtils.resultSetToTableModel(rs));
-					rs.close();
-					con2.getConnection().close();
-				} catch (Exception n) {
-					n.printStackTrace();
-				}
-			}
-		});
-		assignLoad.setBounds(284, 201, 89, 23);
-		adAssign.add(assignLoad);
 
 		JPanel adSearch = new JPanel();
 		tabbedPane.addTab("Search", null, adSearch, null);
@@ -473,7 +386,6 @@ public class AdminGUI {
 	private void EnterIDAndName() {
 		name_Field.setText(ui.getName());
 		id_Field.setText(ui.getID());
-		adminAssignField.setText(ui.getID());
 	}
 
 	private String[] nameSplit(String n) {
